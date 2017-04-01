@@ -8,7 +8,7 @@ This is the pre-implementation for NomadCoin (NOM) on Egalitarian proof of work 
 
 ### Pre-implementation and Preparation.
 
-1. Ubuntu servers for seed node.
+1. Ubuntu servers setup for seed node.
 2. Setting up mining tools, mining pool and wallet on universal pool for pre-mining.
 3. Coding for pre-mining.
 ### Below is the CryptoNote forked setup for NomadCoin (NOM) pre-implementation purposes only.
@@ -31,7 +31,7 @@ set_property(TARGET daemon PROPERTY OUTPUT_NAME "nomadcoind")
 
 **1. Total money supply** (src/CryptoNoteConfig.h)
 
-Total amount of coins to be emitted. Most of CryptoNote based coins use `(uint64_t)(-1)` (equals to 18446744073709551616). You can define number explicitly (for example `UINT64_C(858986905600000000)`).
+Total amount of coins to be emitted. Most of CryptoNote based coins use `(uint64_t)(-1)` (equals to 18446744073709551616). Defining number explicitly using example `UINT64_C(858986905600000000`).
 
 const uint64_t MONEY_SUPPLY = (uint64_t)(-1);
 ```
@@ -74,7 +74,7 @@ This function has two parts:
 - basic block reward calculation: `uint64_t baseReward = (m_moneySupply - alreadyGeneratedCoins) >> m_emissionSpeedFactor;`
 - big block penalty calculation: this is the way CryptoNote protects the block chain from transaction flooding attacks and preserves opportunities for organic network growth at the same time.
 
-Only the first part of this function is directly related to the emission logic. See MonetaVerde and DuckNote as the examples where this function is modified.
+Only the first part of this function is directly related to the emission logic. See MonetaVerde and DuckNote as the examples where this function is also modified.
 
 
 ### Third step. Peer to peer networking
@@ -94,7 +94,7 @@ const int RPC_DEFAULT_PORT = 18236;
 
 **2. Network identifier** (src/P2p/P2pNetworks.h)
 
-This identifier is used in network packages in order not to mix two different cryptocoin networks. Change all the bytes to random values for your network:
+This identifier is used in network packages in order not to mix two different cryptocoin networks so chainging all the bytes to random values on the network:
 ```
 const static boost::uuids::uuid CRYPTONOTE_NETWORK = { { 0xA1, 0x1A, 0xA1, 0x1A, 0xA1, 0x0A, 0xA1, 0x0A, 0xA0, 0x1A, 0xA0, 0x1A, 0xA0, 0x1A, 0xA1, 0x1A } };
 ```
@@ -102,7 +102,7 @@ const static boost::uuids::uuid CRYPTONOTE_NETWORK = { { 0xA1, 0x1A, 0xA1, 0x1A,
 
 **3. Seed nodes** (src/CryptoNoteConfig.h)
 
-Add IP addresses of seed nodes.
+Adding IP addresses of seed nodes examples:
 
 ```
 const std::initializer_list<const char*> SEED_NODES = {
@@ -174,13 +174,13 @@ const char GENESIS_COINBASE_TX_HEX[] = "013c01ff0001ffff...785a33d9ebdba68b0";
 
 NomadCoin node should be ready after Recompiling!
 
-## Building NomadCoin
+## Building and mining NomadCoin
 
 ### On *nix
 
-Dependencies: GCC 4.7.3 or later, CMake 2.8.6 or later, and Boost 1.55.
+Using dependencies: GCC 4.7.3 or later, CMake 2.8.6 or later, and Boost 1.55.
 
-You may download them from:
+can be downloaded from:
 
 * http://gcc.gnu.org/
 * http://www.cmake.org/
@@ -197,18 +197,17 @@ To build, change to a directory where this file is located, and run `make`. The 
 * Building with Clang: it may be possible to use Clang instead of GCC, but this may not work everywhere. To build, run `export CC=clang CXX=clang++` before running `make`.
 
 ### On Windows
-Dependencies: MSVC 2013 or later, CMake 2.8.6 or later, and Boost 1.55. You may download them from:
+Using dependencies: MSVC 2013 or later, CMake 2.8.6 or later, and Boost 1.55 that are downloadable from:
 
 * http://www.microsoft.com/
 * http://www.cmake.org/
 * http://www.boost.org/
 
-To build, change to a directory where this file is located, and run theas commands: 
+To build, change to a directory where this file is located, and run commands: 
 ```
 mkdir build
 cd build
 cmake -G "Visual Studio 12 Win64" ..
 ```
-
-And then do Build.
+Build NomadCoin (NOM) expanding the blockchain.
 Good luck!
