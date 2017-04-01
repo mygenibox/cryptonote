@@ -4,13 +4,13 @@ This is the pre-implementation for NomadCoin (NOM) on Egalitarian proof of work 
 * NomadCoin (NOM) reference pre-implementation: [NomadCoin Pre-implementation](https://github.com/mygenibox/nomadcoin)
 * NomadCoin Wiki: [NomadCoin Wiki]
 
-## NomadCoin Path-Map
+## NomadCoin (NOM) Path-Map
 
-### Preparation
+### Pre-implementation and Preparation.
 
 1. Ubuntu servers for seed node.
 2. Setting up mining tools, mining pool and wallet on universal pool for pre-mining.
-3. 
+3. Coding for pre-mining.
 ### Below is the CryptoNote forked setup for NomadCoin (NOM) pre-implementation purposes only.
 
 
