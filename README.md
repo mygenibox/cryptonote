@@ -209,5 +209,5 @@ mkdir build
 cd build
 cmake -G "Visual Studio 12 Win64" ..
 ```
-Build NomadCoin (NOM) expanding the blockchain.
+Build NomadCoin (NOM) expanding the blockchain probability.
 Good luck!
