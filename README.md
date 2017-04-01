@@ -1,65 +1,52 @@
-This is the reference code for [CryptoNote](https://cryptonote.org) cryptocurrency protocol.
+This is the pre-implementation for NomadCoin (NOM) on Egalitarian proof of work example.
 
-* Launch your own CryptoNote currency: [CryptoNote Starter](https://cryptonotestarter.org/)
-* CryptoNote reference implementation: [CryptoNoteCoin](https://cryptonote-coin.org)
-* Discussion board and support: [CryptoNote Forum](https://forum.cryptonote.org)
+* Launch NomadCoin (NOM) currency: 
+* NomadCoin (NOM) reference pre-implementation: [NomadCoin Pre-implementation](https://github.com/mygenibox/nomadcoin)
+* NomadCoin Wiki: [NomadCoin Wiki]
 
-## CryptoNote forking how-to
+## NomadCoin Path-Map
 
 ### Preparation
 
-1. Create an account on [GitHub.com](github.com)
-2. Fork [CryptoNote repository](https://github.com/cryptonotefoundation/cryptonote)
-3. Buy one or two Ubuntu-based dedicated servers (at least 2Gb of RAM) for seed nodes.
+1. Ubuntu servers for seed node.
+2. Setting up mining tools, mining pool and wallet on universal pool for pre-mining.
+3. 
+### Below is the CryptoNote forked setup for NomadCoin (NOM) pre-implementation purposes only.
 
 
-
-### First step. Give a name to your coin
-
-**Good name must be unique.** Check uniqueness with [google](http://google.com) and [Map of Coins](mapofcoins.com) or any other similar service.
-
-Name must be specified twice:
-
-**1. in file src/CryptoNoteConfig.h** - `CRYPTONOTE_NAME` constant
-
-Example: 
+**Change file src/CryptoNoteConfig.h** - `CRYPTONOTE_NAME` constant 
+to```
+const char CRYPTONOTE_NAME[] = "nomadcoin";
 ```
-const char CRYPTONOTE_NAME[] = "furiouscoin";
+**Change in src/CMakeList.txt file** - set_property(TARGET daemon PROPERTY OUTPUT_NAME "")
+
+to
+```
+set_property(TARGET daemon PROPERTY OUTPUT_NAME "nomadcoind")
 ```
 
-**2. in src/CMakeList.txt file** - set_property(TARGET daemon PROPERTY OUTPUT_NAME "YOURCOINNAME**d**")
+**Note:** Changed Repository name
 
-Example: 
-```
-set_property(TARGET daemon PROPERTY OUTPUT_NAME "furiouscoind")
-```
-
-**Note:** You should also change a repository name.
-
-
-### Second step. Emission logic 
+### Emission logic 
 
 **1. Total money supply** (src/CryptoNoteConfig.h)
 
 Total amount of coins to be emitted. Most of CryptoNote based coins use `(uint64_t)(-1)` (equals to 18446744073709551616). You can define number explicitly (for example `UINT64_C(858986905600000000)`).
 
-Example:
-```
 const uint64_t MONEY_SUPPLY = (uint64_t)(-1);
 ```
 
-**2. Emission curve** (src/CryptoNoteConfig.h)
+**Change Emission curve** (src/CryptoNoteConfig.h)
 
 Be default CryptoNote provides emission formula with slight decrease of block reward with each block. This is different from Bitcoin where block reward halves every 4 years.
 
 `EMISSION_SPEED_FACTOR` constant defines emission curve slope. This parameter is required to calulate block reward. 
 
-Example:
 ```
 const unsigned EMISSION_SPEED_FACTOR = 18;
 ```
 
-**3. Difficulty target** (src/CryptoNoteConfig.h)
+**Change Difficulty target** (src/CryptoNoteConfig.h)
 
 Difficulty target is an ideal time period between blocks. In case an average time between blocks becomes less than difficulty target, the difficulty increases. Difficulty target is measured in seconds.
 
@@ -69,16 +56,15 @@ Difficulty target directly influences several aspects of coin's behavior:
 - emission speed: the longer the time between the blocks is the slower the emission process is
 - orphan rate: chains with very fast blocks have greater orphan rate
 
-For most coins difficulty target is 60 or 120 seconds.
+For AltCoins difficulty target is 1 or 2 minutes.
 
-Example:
 ```
-const uint64_t DIFFICULTY_TARGET = 120;
+const uint64_t DIFFICULTY_TARGET = 120; - where 120 as seconds
 ```
 
-**4. Block reward formula**
+**Change Block reward formula**
 
-In case you are not satisfied with CryptoNote default implementation of block reward logic you can also change it. The implementation is in `src/CryptoNoteCore/Currency.cpp`:
+By default, implementation of block reward logic can be changed. `src/CryptoNoteCore/Currency.cpp`:
 ```
 bool Currency::getBlockReward(size_t medianSize, size_t currentBlockSize, uint64_t alreadyGeneratedCoins, uint64_t fee, uint64_t& reward, int64_t& emissionChange) const
 ```
@@ -88,23 +74,18 @@ This function has two parts:
 - basic block reward calculation: `uint64_t baseReward = (m_moneySupply - alreadyGeneratedCoins) >> m_emissionSpeedFactor;`
 - big block penalty calculation: this is the way CryptoNote protects the block chain from transaction flooding attacks and preserves opportunities for organic network growth at the same time.
 
-Only the first part of this function is directly related to the emission logic. You can change it the way you want. See MonetaVerde and DuckNote as the examples where this function is modified.
+Only the first part of this function is directly related to the emission logic. See MonetaVerde and DuckNote as the examples where this function is modified.
 
 
-### Third step. Networking
+### Third step. Peer to peer networking
 
 **1. Default ports for P2P and RPC networking** (src/CryptoNoteConfig.h)
 
 P2P port is used by daemons to talk to each other through P2P protocol.
 RPC port is used by wallet and other programs to talk to daemon.
 
-It's better to choose ports that aren't used by other software or coins. See known TCP ports lists:
+Choosing ports that aren't used by other software or coins.
 
-* http://www.speedguide.net/ports.php
-* http://www.networksorcery.com/enp/protocol/ip/ports00000.htm
-* http://keir.net/portlist.html
-
-Example:
 ```
 const int P2P_DEFAULT_PORT = 17236;
 const int RPC_DEFAULT_PORT = 18236;
@@ -121,9 +102,8 @@ const static boost::uuids::uuid CRYPTONOTE_NETWORK = { { 0xA1, 0x1A, 0xA1, 0x1A,
 
 **3. Seed nodes** (src/CryptoNoteConfig.h)
 
-Add IP addresses of your seed nodes.
+Add IP addresses of seed nodes.
 
-Example:
 ```
 const std::initializer_list<const char*> SEED_NODES = {
   "111.11.11.11:17236",
@@ -132,13 +112,12 @@ const std::initializer_list<const char*> SEED_NODES = {
 ```
 
 
-### Fourth step. Transaction fee and related parameters
+### Changing transaction fee and related parameters
 
 **1. Minimum transaction fee** (src/CryptoNoteConfig.h)
 
 Zero minimum fee can lead to transaction flooding. Transactions cheaper than the minimum transaction fee wouldn't be accepted by daemons. 100000 value for `MINIMUM_FEE` is usually enough.
 
-Example:
 ```
 const uint64_t MINIMUM_FEE = 100000;
 ```
@@ -148,60 +127,54 @@ const uint64_t MINIMUM_FEE = 100000;
 
 CryptoNote protects chain from tx flooding by reducing block reward for blocks larger than the median block size. However, this rule applies for blocks larger than `CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE` bytes.
 
-Example:
 ```
 const size_t CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE = 20000;
 ```
 
 
-### Fifth step. Address prefix
+### Address prefixing
 
-You may choose a letter (in some cases several letters) all the coin's public addresses will start with. It is defined by `CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX` constant. Since the rules for address prefixes are nontrivial you may use the [prefix generator tool](https://cryptonotestarter.org/tools.html).
+Prefixing all the coins public address defined by `CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX` constant. using [prefix generator tool].
 
-Example:
 ```
 const uint64_t CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX = 0xe9; // addresses start with "f"
 ```
 
 
-### Sixth step. Genesis block
+### Genesis block
 
 **1. Build the binaries with blank genesis tx hex** (src/CryptoNoteConfig.h)
 
 You should leave `const char GENESIS_COINBASE_TX_HEX[]` blank and compile the binaries without it.
 
-Example:
 ```
 const char GENESIS_COINBASE_TX_HEX[] = "";
 ```
 
 
-**2. Start the daemon to print out the genesis block**
+**2. Starting the daemon to print out the genesis block**
 
-Run your daemon with `--print-genesis-tx` argument. It will print out the genesis block coinbase transaction hash.
+Run your daemon with `--print-genesis-tx` argument that will print out the genesis block coinbase transaction hash.
 
-Example:
 ```
-furiouscoind --print-genesis-tx
+nomadcoind --print-genesis-tx
 ```
 
 
 **3. Copy the printed transaction hash** (src/CryptoNoteConfig.h)
 
-Copy the tx hash that has been printed by the daemon to `GENESIS_COINBASE_TX_HEX` in `src/CryptoNoteConfig.h`
+TX hash that has been printed by the daemon for the `GENESIS_COINBASE_TX_HEX` in `src/CryptoNoteConfig.h`
 
-Example:
 ```
 const char GENESIS_COINBASE_TX_HEX[] = "013c01ff0001ffff...785a33d9ebdba68b0";
 ```
 
 
-**4. Recompile the binaries**
+**4. Recompiling the binaries**
 
-Recompile everything again. Your coin code is ready now. Make an announcement for the potential users and enjoy!
+NomadCoin node should be ready after Recompiling!
 
-
-## Building CryptoNote 
+## Building NomadCoin
 
 ### On *nix
 
